@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Groupe Scolaire Les Rôniers</title>
+<meta name="description" content="Exemple de site pour une école privée : classes, tarifs et pré-inscription par WhatsApp. Réalisé par Aby Diaw, développeur web.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>
+  /* Plaquette scolaire imprimée : bleu tenue scolaire, jaune craie, papier blanc. Un seul thème clair, assumé. */
+  :root {
+    color-scheme: light;
+    --paper: #fbfaf6;
+    --paper-2: #f1efe6;
+    --ink: #13294b;          /* bleu tenue scolaire */
+    --ink-2: #3c4d68;
+    --ink-3: #64738a;
+    --line: #dcd8ca;
+    --sun: #f2b705;          /* jaune craie */
+    --sun-soft: #fdf1c7;
+    --leaf: #2f6b3f;         /* vert rônier */
+    --leaf-soft: #e3efe4;
+    --wa: #1f8f4e;
+    --display: 'Bricolage Grotesque', 'Trebuchet MS', system-ui, sans-serif;
+    --body: 'Nunito Sans', 'Segoe UI', system-ui, sans-serif;
+    --gutter: max(16px, env(safe-area-inset-left, 0px));
+    --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.55;
+  }
+  h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+  p { margin: 0; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; border-radius: 4px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding-left: var(--gutter); padding-right: var(--gutter-r); }
+
+  /* Bandeau de démonstration */
+  .demo {
+    background: var(--ink);
+    color: #fff;
+    font-size: 14px;
+  }
+  .demo .wrap { padding-block: 8px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; justify-content: center; text-align: center; }
+  .demo strong { color: var(--sun); }
+
+  /* En-tête */
+  header.top {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    background: color-mix(in srgb, var(--paper) 94%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .brand svg { flex: none; }
+  .brand b { font-family: var(--display); font-weight: 800; font-size: 19px; line-height: 1.05; display: block; }
+  .brand span { font-size: 13px; color: var(--ink-3); display: block; }
+  nav.links { display: flex; gap: 22px; font-weight: 700; font-size: 15px; }
+  nav.links a { text-decoration: none; padding-block: 4px; border-bottom: 2px solid transparent; }
+  nav.links a:hover { border-color: var(--sun); }
+
+  /* Accueil */
+  .hero { padding-block: 56px 64px; }
+  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 48px; align-items: center; }
+  .tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--leaf-soft); color: var(--leaf);
+    font-weight: 700; font-size: 14px;
+    padding: 6px 12px; border-radius: 999px;
+  }
+  .tag i { width: 8px; height: 8px; border-radius: 50%; background: var(--leaf); }
+  .hero h1 { font-size: clamp(38px, 6vw, 64px); font-weight: 800; line-height: 1.02; margin-top: 18px; }
+  .hero h1 mark { background: linear-gradient(transparent 58%, var(--sun) 58%, var(--sun) 92%, transparent 92%); color: inherit; padding: 0 2px; }
+  .hero p.lead { font-size: 19px; color: var(--ink-2); margin-top: 18px; max-width: 34em; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 50px; padding: 0 22px; border-radius: 12px;
+    font-weight: 700; font-size: 16px; text-decoration: none; border: 2px solid var(--ink);
+    cursor: pointer; font-family: inherit;
+  }
+  .btn-main { background: var(--ink); color: #fff; }
+  .btn-main:hover { background: #1d3a66; }
+  .btn-wa { background: #fff; color: var(--ink); }
+  .btn-wa:hover { background: var(--leaf-soft); }
+  .btn-wa svg { color: var(--wa); }
+
+  /* Ardoise */
+  .slate {
+    background: #1f3b33;
+    color: #eef3ea;
+    border-radius: 18px;
+    padding: 28px 26px 24px;
+    border: 10px solid #9a6b3f;
+    box-shadow: 0 18px 40px rgba(19, 41, 75, 0.18);
+    position: relative;
+  }
+  .slate h2 { font-size: 15px; font-family: var(--body); font-weight: 700; letter-spacing: 0.06em; color: var(--sun); }
+  .slate ul { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 14px; }
+  .slate li { display: grid; grid-template-columns: 88px 1fr; gap: 12px; align-items: baseline; border-bottom: 1px dashed rgba(238, 243, 234, 0.25); padding-bottom: 12px; }
+  .slate li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .slate .n { font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .slate .t { font-size: 15.5px; color: #d7e2d4; }
+  .slate .chalk { position: absolute; bottom: -10px; right: 22px; width: 54px; height: 10px; background: #fff; border-radius: 3px; }
+
+  /* Sections */
+  section.block { padding-block: 64px; }
+  section.alt { background: var(--paper-2); border-block: 1px solid var(--line); }
+  .head { max-width: 640px; margin-bottom: 32px; }
+  .head h2 { font-size: clamp(30px, 4.2vw, 42px); font-weight: 800; line-height: 1.08; }
+  .head p { color: var(--ink-2); margin-top: 10px; }
+
+  .cycles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .cycle { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 10px; }
+  .cycle .age { font-size: 14px; font-weight: 700; color: var(--leaf); }
+  .cycle h3 { font-size: 24px; font-weight: 800; }
+  .classes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+  .classes span { font-size: 13.5px; font-weight: 700; background: var(--paper-2); border: 1px solid var(--line); padding: 2px 9px; border-radius: 7px; }
+  .cycle p { color: var(--ink-2); font-size: 16px; }
+  .exam { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); font-size: 15px; }
+  .exam b { color: var(--ink); }
+
+  .why { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 40px; }
+  .why div { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; }
+  .why .ic { width: 44px; height: 44px; border-radius: 12px; background: var(--sun-soft); display: grid; place-items: center; color: var(--ink); }
+  .why h3 { font-size: 19px; font-weight: 800; font-family: var(--body); }
+  .why p { color: var(--ink-2); font-size: 16px; margin-top: 2px; }
+
+  /* Tarifs */
+  .fees-box { background: #fff; border: 1px solid var(--line); border-radius: 16px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 520px; }
+  th, td { text-align: left; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+  th { font-size: 14px; color: var(--ink-3); font-weight: 700; background: var(--paper-2); }
+  td { font-size: 17px; }
+  td.num { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  td small { display: block; color: var(--ink-3); font-size: 14px; font-weight: 400; }
+  .note { font-size: 15px; color: var(--ink-3); margin-top: 14px; }
+
+  /* Inscription */
+  .signup { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 40px; align-items: start; }
+  .docs { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  .docs li { display: flex; gap: 12px; align-items: flex-start; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .docs li svg { flex: none; color: var(--leaf); margin-top: 2px; }
+  .form { background: #fff; border: 2px solid var(--ink); border-radius: 18px; padding: 26px; display: grid; gap: 16px; box-shadow: 8px 8px 0 var(--sun); }
+  .form h3 { font-size: 24px; font-weight: 800; }
+  .form p.sub { color: var(--ink-2); font-size: 15.5px; margin-top: -8px; }
+  .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  label { display: grid; gap: 6px; font-weight: 700; font-size: 15px; }
+  input, select {
+    width: 100%; min-height: 48px; padding: 10px 12px;
+    border: 1.5px solid var(--line); border-radius: 10px; background: var(--paper);
+    font: inherit; font-weight: 400; color: var(--ink);
+  }
+  input:focus, select:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px var(--sun-soft); }
+  .hint { font-size: 14px; color: var(--ink-3); }
+  .send { width: 100%; background: var(--wa); border-color: var(--wa); color: #fff; }
+  .send:hover { background: #18773f; }
+  .send[aria-disabled="true"] { opacity: 0.55; pointer-events: none; }
+
+  /* Contact */
+  .contact { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .contact > div { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
+  .contact h3 { font-size: 15px; font-family: var(--body); font-weight: 700; color: var(--ink-3); margin-bottom: 6px; }
+  .contact p { font-size: 17px; }
+  .contact .big { font-family: var(--display); font-weight: 800; font-size: 22px; }
+
+  footer { background: var(--ink); color: #c9d3e3; padding-block: 28px calc(28px + env(safe-area-inset-bottom, 0px)); font-size: 15px; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; }
+  footer b { color: #fff; }
+
+  /* Bouton WhatsApp flottant */
+  .float-wa {
+    position: fixed;
+    right: max(18px, calc(env(safe-area-inset-right, 0px) + 12px));
+    bottom: max(18px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+    z-index: 20;
+    width: 58px; height: 58px; border-radius: 50%;
+    background: var(--wa); color: #fff;
+    display: grid; place-items: center;
+    box-shadow: 0 8px 22px rgba(31, 143, 78, 0.4);
+  }
+
+  @media (max-width: 860px) {
+    nav.links { display: none; }
+    .hero { padding-block: 36px 48px; }
+    .hero .wrap, .signup { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+    .cycles, .contact { grid-template-columns: minmax(0, 1fr); }
+    .why { grid-template-columns: minmax(0, 1fr); }
+    section.block { padding-block: 48px; }
+  }
+  @media (max-width: 480px) {
+    .row { grid-template-columns: minmax(0, 1fr); }
+    .form { padding: 20px; box-shadow: 6px 6px 0 var(--sun); }
+    .btn { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<div class="demo">
+  <div class="wrap">
+    <span><strong>Site de démonstration.</strong> Cette école est imaginaire.</span>
+    <span>Réalisé par Aby Diaw, développeur web : +221 76 924 03 26</span>
+  </div>
+</div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#accueil" aria-label="Groupe Scolaire Les Rôniers, accueil">
+      <svg width="42" height="42" viewBox="0 0 42 42" aria-hidden="true">
+        <circle cx="21" cy="21" r="21" fill="#13294b"/>
+        <path d="M21 34 L21 17" stroke="#f2b705" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+        <path d="M21 17 C17 12 12 12 9 14 M21 17 C25 12 30 12 33 14 M21 17 C18 10 18 8 21 6 M21 17 C24 10 24 8 21 6 M21 17 C15 15 11 18 10 21 M21 17 C27 15 31 18 32 21" stroke="#f2b705" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+        <path d="M14 34 H28" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span><b>Les Rôniers</b><span>Groupe scolaire privé, Gossas</span></span>
+    </a>
+    <nav class="links" aria-label="Menu">
+      <a href="#cycles">Nos classes</a>
+      <a href="#tarifs">Tarifs</a>
+      <a href="#inscription">Inscription</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="accueil">
+    <div class="wrap">
+      <div>
+        <span class="tag"><i></i>Année scolaire 2026-2027</span>
+        <h1>Les inscriptions sont <mark>encore ouvertes</mark></h1>
+        <p class="lead">De la petite section à la 3e, nous accompagnons chaque enfant avec des classes à petits effectifs, des enseignants suivis de près et un lien direct avec les parents.</p>
+        <div class="actions">
+          <a class="btn btn-main" href="#inscription">Pré-inscrire mon enfant</a>
+          <a class="btn btn-wa wa-link" href="https://wa.me/221769240326?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20les%20inscriptions." target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4a.5.5 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg>
+            Nous écrire sur WhatsApp
+          </a>
+        </div>
+      </div>
+      <aside class="slate" aria-label="L'école en chiffres">
+        <h2>L'ÉCOLE EN BREF</h2>
+        <ul>
+          <li><span class="n">25</span><span class="t">élèves au maximum par classe</span></li>
+          <li><span class="n">3</span><span class="t">cycles : préscolaire, élémentaire et moyen</span></li>
+          <li><span class="n">CE1</span><span class="t">début des cours d'informatique et d'anglais</span></li>
+          <li><span class="n">12&nbsp;h</span><span class="t">cantine sur place pour les élèves qui restent à midi</span></li>
+        </ul>
+        <span class="chalk" aria-hidden="true"></span>
+      </aside>
+    </div>
+  </section>
+
+  <section class="block alt" id="cycles">
+    <div class="wrap">
+      <div class="head">
+        <h2>Nos classes, de 3 à 15 ans</h2>
+        <p>Le programme officiel du Sénégal, avec un suivi personnalisé et des devoirs corrigés chaque semaine.</p>
+      </div>
+      <div class="cycles">
+        <article class="cycle">
+          <span class="age">3 à 5 ans</span>
+          <h3>Préscolaire</h3>
+          <div class="classes"><span>Petite section</span><span>Moyenne section</span><span>Grande section</span></div>
+          <p>Éveil, langage, premiers chiffres et lettres, jeux et chants pour bien préparer le CI.</p>
+          <p class="exam">Objectif : <b>entrer au CI en confiance</b></p>
+        </article>
+        <article class="cycle">
+          <span class="age">6 à 11 ans</span>
+          <h3>Élémentaire</h3>
+          <div class="classes"><span>CI</span><span>CP</span><span>CE1</span><span>CE2</span><span>CM1</span><span>CM2</span></div>
+          <p>Lecture, écriture, calcul et sciences, avec des évaluations régulières et un cahier de liaison pour les parents.</p>
+          <p class="exam">Préparation au <b>CFEE</b> et à l'entrée en 6e</p>
+        </article>
+        <article class="cycle">
+          <span class="age">11 à 15 ans</span>
+          <h3>Moyen</h3>
+          <div class="classes"><span>6e</span><span>5e</span><span>4e</span><span>3e</span></div>
+          <p>Toutes les matières du programme, des cours de renforcement le samedi matin et des examens blancs.</p>
+          <p class="exam">Préparation au <b>BFEM</b></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="head">
+        <h2>Pourquoi les parents nous choisissent</h2>
+      </div>
+      <div class="why">
+        <div>
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.5" cy="9" r="2.4"/><path d="M16 14.2c2.9.3 5 2.6 5 5.8"/></svg></span>
+          <span><h3>Petits effectifs</h3><p>25 élèves au plus par classe : chaque enfant est connu et suivi.</p></span>
+        </div>
+        <div>
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5A8 8 0 1 1 21 12Z"/></svg></span>
+          <span><h3>Parents informés</h3><p>Notes, absences et réunions communiquées par WhatsApp chaque semaine.</p></span>
+        </div>
+        <div>
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>
+          <span><h3>Informatique et anglais</h3><p>Une salle équipée et des cours dès le CE1 pour préparer l'avenir.</p></span>
+        </div>
+        <div>
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4v5c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V7l8-4Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+          <span><h3>Cadre sûr</h3><p>Cour fermée, surveillance aux récréations et accueil dès 7&nbsp;h&nbsp;30.</p></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block alt" id="tarifs">
+    <div class="wrap">
+      <div class="head">
+        <h2>Tarifs 2026-2027</h2>
+        <p>Des frais clairs, payables chaque mois par espèces, Wave ou Orange Money.</p>
+      </div>
+      <div class="fees-box">
+        <table>
+          <thead>
+            <tr><th scope="col">Cycle</th><th scope="col">Inscription (une fois)</th><th scope="col">Mensualité</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Préscolaire<small>Petite, moyenne et grande section</small></td><td class="num">15 000 FCFA</td><td class="num">10 000 FCFA</td></tr>
+            <tr><td>Élémentaire<small>Du CI au CM2</small></td><td class="num">15 000 FCFA</td><td class="num">12 500 FCFA</td></tr>
+            <tr><td>Moyen<small>De la 6e à la 3e</small></td><td class="num">20 000 FCFA</td><td class="num">15 000 FCFA</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Tenue scolaire, fournitures et cantine non comprises. Réduction de 10 % à partir du deuxième enfant inscrit.</p>
+    </div>
+  </section>
+
+  <section class="block" id="inscription">
+    <div class="wrap signup">
+      <div>
+        <div class="head">
+          <h2>Inscrire votre enfant</h2>
+          <p>Faites la pré-inscription en ligne, puis passez à l'école avec ces documents :</p>
+        </div>
+        <ul class="docs">
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>Un extrait d'acte de naissance</li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>Deux photos d'identité récentes</li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>Le dernier bulletin de notes (sauf préscolaire)</li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>Un certificat de scolarité si l'enfant vient d'une autre école</li>
+        </ul>
+      </div>
+
+      <form class="form" id="preinscription" novalidate>
+        <h3>Pré-inscription</h3>
+        <p class="sub">Remplissez le formulaire : le message part directement sur WhatsApp.</p>
+        <div class="row">
+          <label for="enfant">Prénom et nom de l'enfant
+            <input id="enfant" name="enfant" autocomplete="off" placeholder="Ex. : Awa Ndiaye">
+          </label>
+          <label for="classe">Classe souhaitée
+            <select id="classe" name="classe">
+              <option value="">Choisir</option>
+              <optgroup label="Préscolaire"><option>Petite section</option><option>Moyenne section</option><option>Grande section</option></optgroup>
+              <optgroup label="Élémentaire"><option>CI</option><option>CP</option><option>CE1</option><option>CE2</option><option>CM1</option><option>CM2</option></optgroup>
+              <optgroup label="Moyen"><option>6e</option><option>5e</option><option>4e</option><option>3e</option></optgroup>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label for="parent">Nom du parent
+            <input id="parent" name="parent" autocomplete="name" placeholder="Ex. : Fatou Ndiaye">
+          </label>
+          <label for="tel">Téléphone du parent
+            <input id="tel" name="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="Ex. : 77 123 45 67">
+          </label>
+        </div>
+        <p class="hint" id="hint" role="status">Remplissez les quatre champs pour envoyer la demande.</p>
+        <a class="btn send" id="send" href="#" target="_blank" rel="noopener" aria-disabled="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></svg>
+          Envoyer sur WhatsApp
+        </a>
+      </form>
+    </div>
+  </section>
+
+  <section class="block alt" id="contact">
+    <div class="wrap">
+      <div class="head"><h2>Nous trouver</h2></div>
+      <div class="contact">
+        <div>
+          <h3>Adresse</h3>
+          <p class="big">Gossas</p>
+          <p>Région de Fatick, Sénégal</p>
+        </div>
+        <div>
+          <h3>Horaires du secrétariat</h3>
+          <p>Lundi au vendredi : 8&nbsp;h à 13&nbsp;h et 15&nbsp;h à 17&nbsp;h</p>
+          <p>Samedi : 9&nbsp;h à 12&nbsp;h</p>
+        </div>
+        <div>
+          <h3>Téléphone et WhatsApp</h3>
+          <p class="big">76 924 03 26</p>
+          <p><a class="wa-link" href="https://wa.me/221769240326?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20les%20inscriptions." target="_blank" rel="noopener">Écrire sur WhatsApp</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><b>Groupe Scolaire Les Rôniers</b> : école fictive, site d'exemple</span>
+    <span>Site réalisé par <b>Aby Diaw</b>, développeur web · diawaby0202@gmail.com</span>
+  </div>
+</footer>
+
+<a class="float-wa wa-link" href="https://wa.me/221769240326?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20les%20inscriptions." target="_blank" rel="noopener" aria-label="Écrire à l'école sur WhatsApp">
+  <svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4a.5.5 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg>
+</a>
+
+<script>
+  // Pré-inscription : le formulaire prépare un message WhatsApp avec les informations saisies.
+  (function () {
+    const PHONE = '221769240326';
+    const fields = ['enfant', 'classe', 'parent', 'tel'].map((id) => document.getElementById(id));
+    const send = document.getElementById('send');
+    const hint = document.getElementById('hint');
+
+    function update() {
+      const [enfant, classe, parent, tel] = fields.map((f) => f.value.trim());
+      const ready = enfant && classe && parent && tel;
+      if (!ready) {
+        send.setAttribute('aria-disabled', 'true');
+        send.href = '#';
+        hint.textContent = 'Remplissez les quatre champs pour envoyer la demande.';
+        return;
+      }
+      const text =
+        'Bonjour, je souhaite pré-inscrire mon enfant.\n' +
+        'Enfant : ' + enfant + '\n' +
+        'Classe : ' + classe + '\n' +
+        'Parent : ' + parent + '\n' +
+        'Téléphone : ' + tel;
+      send.href = 'https://wa.me/' + PHONE + '?text=' + encodeURIComponent(text);
+      send.setAttribute('aria-disabled', 'false');
+      hint.textContent = 'Tout est prêt : touchez le bouton pour ouvrir WhatsApp.';
+    }
+
+    fields.forEach((f) => {
+      f.addEventListener('input', update);
+      f.addEventListener('change', update);
+    });
+    send.addEventListener('click', (e) => {
+      if (send.getAttribute('aria-disabled') === 'true') e.preventDefault();
+    });
+    document.getElementById('preinscription').addEventListener('submit', (e) => e.preventDefault());
+    update();
+  })();
+</script>
+</body>
+</html>
